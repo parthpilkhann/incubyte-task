@@ -6,16 +6,33 @@ export function add(numbers: string): number {
 
   if (numbers.startsWith("//")) {
     const delimiterEnd = numbers.indexOf("\n");
-    delimiter = new RegExp(numbers.substring(2, delimiterEnd));
+    const customDelimiter = numbers.substring(2, delimiterEnd);
+
+    if (!customDelimiter.includes("[") && customDelimiter.length > 0) {
+      delimiter = new RegExp(escapeRegExp(customDelimiter));
+    } else {
+      const delimiters = customDelimiter
+        .slice(1, -1)
+        .split("][")
+        .map(escapeRegExp);
+      delimiter = new RegExp(delimiters.join("|"));
+    }
+
     numsStr = numbers.substring(delimiterEnd + 1);
   }
 
-  const nums = numsStr.split(delimiter).map(Number);
-  const negatives = nums.filter((num) => num < 0);
+  const nums = numsStr.split(delimiter).map((num) => Number(num.trim()));
+
+  const validNums = nums.filter((num) => !isNaN(num));
+  const negatives = validNums.filter((num) => num < 0);
 
   if (negatives.length > 0) {
     throw new Error(`negative numbers not allowed ${negatives.join(",")}`);
   }
 
-  return nums.reduce((sum, num) => sum + num, 0);
+  return validNums.reduce((sum, num) => sum + num, 0);
+}
+
+function escapeRegExp(string: string): string {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
