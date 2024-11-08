@@ -8,15 +8,8 @@ export function add(numbers: string): number {
     const delimiterEnd = numbers.indexOf("\n");
     const customDelimiter = numbers.substring(2, delimiterEnd);
 
-    if (!customDelimiter.includes("[") && customDelimiter.length > 0) {
-      delimiter = new RegExp(escapeRegExp(customDelimiter));
-    } else {
-      const delimiters = customDelimiter
-        .slice(1, -1)
-        .split("][")
-        .map(escapeRegExp);
-      delimiter = new RegExp(delimiters.join("|"));
-    }
+    // Simplified to use a single custom delimiter
+    delimiter = new RegExp(escapeRegExp(customDelimiter));
 
     numsStr = numbers.substring(delimiterEnd + 1);
   }
