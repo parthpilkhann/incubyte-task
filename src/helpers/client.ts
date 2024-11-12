@@ -13,18 +13,32 @@ export function add(numbers: string): number {
     numbers = numbers.substring(delimiterEnd + 1);
   }
 
-  const nums = numbers
+  const nums = filterNonNumeric(numbers, delimiter); // Filter out non-numeric values
+
+  validateNegatives(nums);
+
+  const finalNumbers = removeNumsGreaterThanThousand(nums);
+
+  return finalNumbers.reduce((sum, num) => sum + num, 0);
+}
+
+function removeNumsGreaterThanThousand(nums: number[]) {
+  return nums.filter((num) => num < 1000);
+}
+
+function filterNonNumeric(numbers: string, delimiter: RegExp) {
+  return numbers
     .split(delimiter) // Split by specified delimiters
     .map((num) => Number(num.trim())) // Convert to numbers and trim whitespace
-    .filter((num) => !isNaN(num)); // Filter out non-numeric values
+    .filter((num) => !isNaN(num));
+}
 
+function validateNegatives(nums: number[]) {
   const negatives = nums.filter((num) => num < 0);
 
   if (negatives.length > 0) {
     throw new Error(`negative numbers not allowed ${negatives.join(",")}`);
   }
-
-  return nums.reduce((sum, num) => sum + num, 0);
 }
 
 // Function to escape special characters in the delimiter
